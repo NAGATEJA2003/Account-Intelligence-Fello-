@@ -13,6 +13,11 @@ on:
           - 5
           - 10
           - 20
+      dry_run:
+        description: 'Dry run (skip Salesforce sync)'
+        required: false
+        default: false
+        type: boolean
 
   # Webhook trigger (requires GitHub App or external service)
   repository_dispatch:
@@ -22,34 +27,160 @@ jobs:
   account-intelligence-sync:
     runs-on: ubuntu-latest
 
+    # Environment variables available to all steps
+    env:
+      LOG_LEVEL: INFO
+      PYTHONUNBUFFERED: 1
+
     steps:
-      - name: Checkout code
+      - name: 📋 Workflow Initialization
+        run: |
+          echo "═══════════════════════════════════════════════════"
+          echo "  Fello Account Intelligence Sync Workflow"
+          echo "═══════════════════════════════════════════════════"
+          echo "Run Number: ${{ github.run_number }}"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Record Count: ${{ inputs.record_count || '5' }}"
+          echo "Dry Run: ${{ inputs.dry_run || 'false' }}"
+          echo "═══════════════════════════════════════════════════"
+
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: 🐍 Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: |
+          echo "📦 Installing Python dependencies..."
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          echo "✅ Dependencies installed successfully"
+          pip list
 
-      - name: Run Account Intelligence Sync
+      - name: 🔍 Verify environment setup
+        run: |
+          echo "🔍 Verifying environment setup..."
+          python --version
+          pip --version
+          echo "📁 Working directory contents:"
+          ls -la
+          echo "📁 Backend contents:"
+          ls -la backend/ || echo "Backend directory not found"
+
+      - name: 🔐 Verify secrets are configured
+        run: |
+          echo "🔐 Verifying secrets configuration..."
+          if [ -z "${{ secrets.SF_USERNAME }}" ]; then
+            echo "❌ ERROR: SF_USERNAME secret not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.SF_PASSWORD }}" ]; then
+            echo "❌ ERROR: SF_PASSWORD secret not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.SF_TOKEN }}" ]; then
+            echo "❌ ERROR: SF_TOKEN secret not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.GROQ_API_KEY }}" ]; then
+            echo "❌ ERROR: GROQ_API_KEY secret not set"
+            exit 1
+          fi
+          echo "✅ All secrets configured (values hidden for security)"
+
+      - name: 🚀 Run Account Intelligence Sync
+        id: sync
+        continue-on-error: true
         env:
           SF_USERNAME: ${{ secrets.SF_USERNAME }}
           SF_PASSWORD: ${{ secrets.SF_PASSWORD }}
           SF_TOKEN: ${{ secrets.SF_TOKEN }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           TOTAL_RECORDS: ${{ inputs.record_count || '5' }}
-        run: python run_sync.py
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          echo "🚀 Starting Account Intelligence Sync Pipeline..."
+          echo "═══════════════════════════════════════════════════"
 
-      - name: Upload logs as artifacts
+          # Create logs directory if it doesn't exist
+          mkdir -p logs
+
+          # Run the sync pipeline and capture output
+          set +e
+          python run_sync.py 2>&1 | tee logs/sync_output.log
+          EXIT_CODE=${?}
+          set -e
+
+          echo "═══════════════════════════════════════════════════"
+          echo "Pipeline completed with exit code: $EXIT_CODE"
+
+          # Save exit code for later steps
+          echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_OUTPUT
+
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "❌ Pipeline failed with exit code: $EXIT_CODE"
+            exit $EXIT_CODE
+          fi
+
+          echo "✅ Pipeline completed successfully"
+
+      - name: 📊 Generate execution summary
+        if: always()
+        run: |
+          echo "📊 EXECUTION SUMMARY"
+          echo "═══════════════════════════════════════════════════"
+          echo "Run Number: ${{ github.run_number }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Status: ${{ steps.sync.outcome }}"
+          echo "Exit Code: ${{ steps.sync.outputs.EXIT_CODE }}"
+          echo "═══════════════════════════════════════════════════"
+
+          # Show log file if it exists
+          if [ -f logs/sync_output.log ]; then
+            echo "📄 Last 50 lines of sync output:"
+            tail -n 50 logs/sync_output.log
+          fi
+
+      - name: 📤 Upload logs as artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: sync-logs-${{ github.run_number }}
-          path: logs/
+          name: sync-logs-${{ github.run_number }}-${{ github.run_id }}
+          path: |
+            logs/
+            data/*.json
           retention-days: 30
+          if-no-files-found: warn
+
+      - name: ❌ Handle failure
+        if: failure() && steps.sync.outputs.EXIT_CODE != ''
+        run: |
+          echo "❌ PIPELINE FAILED"
+          echo "═══════════════════════════════════════════════════"
+          echo "Exit Code: ${{ steps.sync.outputs.EXIT_CODE }}"
+          echo ""
+          echo "Common failure reasons:"
+          echo "  • Invalid Salesforce credentials"
+          echo "  • Invalid Groq API key"
+          echo "  • Network connectivity issues"
+          echo "  • Salesforce API rate limits"
+          echo "  • Python dependency issues"
+          echo ""
+          echo "Please check the logs artifact for detailed error information."
+          echo "═══════════════════════════════════════════════════"
+
+      - name: ✅ Handle success
+        if: success()
+        run: |
+          echo "✅ PIPELINE COMPLETED SUCCESSFULLY"
+          echo "═══════════════════════════════════════════════════"
+          echo "Records processed: ${{ inputs.record_count || '5' }}"
+          echo "Logs uploaded as artifact: sync-logs-${{ github.run_number }}-${{ github.run_id }}"
+          echo "═══════════════════════════════════════════════════"
