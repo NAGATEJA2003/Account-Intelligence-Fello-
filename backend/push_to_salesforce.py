@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from dotenv import load_dotenv
 from simple_salesforce import Salesforce
 from simple_salesforce.exceptions import SalesforceError
-from fello_logger import get_logger
+from .fello_logger import get_logger
 
 # Get the directory of this script
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))

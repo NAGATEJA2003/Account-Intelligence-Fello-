@@ -1,5 +1,5 @@
 # import json
-# from research_agent import get_account_intel
+# from .research_agent import get_account_intel
 
 # def run_engine():
 #     print("🧠 Starting AI Enrichment Engine...")
@@ -30,7 +30,7 @@
 #     run_engine()
 import json
 import os
-from research_agent import get_account_intel
+from .research_agent import get_account_intel
 
 # Get the directory of this script
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))

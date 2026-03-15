@@ -4,10 +4,10 @@ import time
 import json
 import traceback
 from datetime import datetime
-from generate_signals import generate_random_traffic
-from research_agent import get_account_intel
-from push_to_salesforce import push_intelligence_to_sf
-from fello_logger import get_logger
+from .generate_signals import generate_random_traffic
+from .research_agent import get_account_intel
+from .push_to_salesforce import push_intelligence_to_sf
+from .fello_logger import get_logger
 
 # Get the directory of this script
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))

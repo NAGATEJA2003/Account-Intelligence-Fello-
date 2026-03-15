@@ -9,7 +9,7 @@ import os
 import json
 import logging
 from groq import Groq
-from groq.types import Error
+from groq import APIError
 
 # Configure module-level logging
 logger = logging.getLogger(__name__)
@@ -141,7 +141,7 @@ def get_account_intel(company_name, pages):
     except json.JSONDecodeError as e:
         raise GroqAPIError(f"Failed to parse AI response as JSON: {e}")
 
-    except Error as e:
+    except APIError as e:
         # Handle Groq-specific errors
         error_msg = str(e)
 
