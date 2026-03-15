@@ -1,0 +1,300 @@
+<!-- <template>
+    <div class="slds-p-around_medium dashboard-container">
+        <div class="slds-page-header slds-m-bottom_medium header-white">
+            <div class="slds-grid slds-grid_vertical-align-center">
+                <div class="slds-col">
+                    <h1 class="slds-page-header__title">Fello Account Intelligence</h1>
+                </div>
+                <div class="slds-col slds-grid slds-grid_align-end">
+                    <lightning-combobox variant="label-hidden" value={sortOrder} options={sortOptions} onchange={handleSort} class="slds-m-right_small"></lightning-combobox>
+                    <lightning-button label="Export CSV" icon-name="utility:download" variant="brand" onclick={downloadExcel}></lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <div class="slds-grid slds-wrap slds-gutters">
+            <template for:each={topFive} for:item="v">
+                <div key={v.id} class="slds-col slds-size_1-of-5 slds-m-bottom_small">
+                    <div class="white-card banner-card hover-lift" onclick={handleViewDetail} data-id={v.id}>
+                        
+                        <div class="card-head">
+                            <span class={v.scoreClass}>{v.intent_score}</span>
+                            <span class="time-tag-banner">{v.timeAgo}</span>
+                        </div>
+
+                        <div class="slds-text-align_center slds-p-horizontal_x-small">
+                            <strong class="company-title-banner">{v.company}</strong>
+                        </div>
+
+                        <div class="slds-p-horizontal_x-small slds-p-bottom_x-small">
+                            <div class="slds-badge persona-badge-banner">{v.persona}</div>
+                            <div class="hook-preview-banner">"{v.sales_hook}"</div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <div class="table-white-bg slds-m-top_large">
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout">
+                <thead>
+                    <tr>
+                        <th style="width:80px">Rating</th>
+                        <th>Company</th>
+                        <th>Likely Persona</th>
+                        <th>HQ</th>
+                        <th style="width:120px">Last Seen</th> <th style="width:25%">Key Signals</th>
+                        <th style="width:50px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={historicalData} for:item="v">
+                        <tr key={v.id} class="list-row" onclick={handleViewDetail} data-id={v.id}>
+                            <td><span class={v.scoreClass}>{v.intent_score}</span></td>
+                            <td><strong>{v.company}</strong></td>
+                            <td class="slds-truncate">{v.persona}</td>
+                            <td>{v.hq}</td>
+                            <td><span class="time-tag-table">{v.timeAgo}</span></td> <td class="slds-truncate">{v.key_signals}</td>
+                            <td><lightning-button-icon icon-name="utility:expand" variant="bare"></lightning-button-icon></td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+
+        <template if:true={selectedVisitor}>
+            <section class="slds-modal slds-fade-in-open slds-modal_medium">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header modal-header-blue">
+                        <lightning-button-icon icon-name="utility:close" variant="border-filled" class="slds-modal__close" onclick={closeModal}></lightning-button-icon>
+                        <h2 class="slds-modal__title">{selectedVisitor.company} | Strategic Profile</h2>
+                    </header>
+                    
+                    <div class="slds-modal__content slds-p-around_large">
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-2">
+                                <h3 class="detail-title">🏢 Firmographics</h3>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Website Domain</label>
+                                    <p class="field-value">{selectedVisitor.domain}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Headquarters</label>
+                                    <p class="field-value">{selectedVisitor.hq}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Company Size</label>
+                                    <p class="field-value">{selectedVisitor.company_size}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Industry</label>
+                                    <p class="field-value">{selectedVisitor.industry}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Technology Stack</label>
+                                    <p class="field-value">{selectedVisitor.tech_stack}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Leadership</label>
+                                    <p class="field-value">{selectedVisitor.leadership}</p>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2">
+                                <h3 class="detail-title">🎯 Intent Insight</h3>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Buying Persona</label>
+                                    <p class="field-value">{selectedVisitor.persona}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Purchase Stage</label>
+                                    <p class="field-value">{selectedVisitor.intent_stage}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Behavioral Signals</label>
+                                    <p class="field-value">{selectedVisitor.key_signals}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Data Confidence</label>
+                                    <p class={selectedVisitor.confClass}>{selectedVisitor.confidence}% Reliable</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Engagement Stats</label>
+                                    <p class="field-value">{selectedVisitor.visits} Visits | {selectedVisitor.duration} Session</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-box slds-m-top_large ai-card">
+                            <h3 class="detail-title" style="border:none">🤖 AI Research Summary</h3>
+                            <p class="field-value slds-m-bottom_large">{selectedVisitor.ai_summary}</p>
+                            
+                            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-top_medium">
+                                <div class="slds-col">
+                                    <p class="blue-text slds-text-heading_small">Hook: {selectedVisitor.sales_hook}</p>
+                                    <div class="action-highlight slds-m-top_xx-small">Suggested Action: {selectedVisitor.sales_action}</div>
+                                </div>
+                                <div class="slds-col">
+                                    <lightning-button variant="brand" label="Draft Outreach Email" icon-name="utility:email" onclick={handleEmailLead}></lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+</template> -->
+
+<template>
+    <div class="slds-p-around_medium dashboard-container">
+        <div class="slds-page-header slds-m-bottom_medium header-white">
+            <div class="slds-grid slds-grid_vertical-align-center">
+                <div class="slds-col">
+                    <h1 class="slds-page-header__title">Fello Account Intelligence</h1>
+                </div>
+                <div class="slds-col slds-grid slds-grid_align-end">
+                    <lightning-combobox variant="label-hidden" value={sortOrder} options={sortOptions} onchange={handleSort} class="slds-m-right_small"></lightning-combobox>
+                    <lightning-button label="Export CSV" icon-name="utility:download" variant="brand" onclick={downloadExcel}></lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <div class="slds-grid slds-wrap slds-gutters">
+            <template for:each={topFive} for:item="v">
+                <div key={v.id} class="slds-col slds-size_1-of-5 slds-m-bottom_small">
+                    <div class="white-card banner-card hover-lift" onclick={handleViewDetail} data-id={v.id}>
+                        
+                        <div class="card-head">
+                            <span class={v.scoreClass}>{v.intent_score}</span>
+                            <span class="time-tag-banner">{v.timeAgo}</span>
+                        </div>
+
+                        <div class="slds-text-align_center slds-m-vertical_x-small">
+                            <strong class="company-title-banner">{v.company}</strong>
+                        </div>
+
+                        <div class="behavior-row">
+                            <span>🔄 {v.visits} Visits</span>
+                            <span>⏱️ {v.duration}</span>
+                        </div>
+
+                        <div class="slds-m-vertical_x-small">
+                            <div class="persona-badge-blue">{v.persona}</div>
+                        </div>
+
+                        <div class="hook-preview-banner">"{v.sales_hook}"</div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <div class="table-white-bg slds-m-top_large">
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout">
+                <thead>
+                    <tr>
+                        <th style="width:80px">Rating</th>
+                        <th>Company</th>
+                        <th>Likely Persona</th>
+                        <th>HQ</th>
+                        <th style="width:110px">Last Seen</th>
+                        <th style="width:30%">Key Signals</th>
+                        <th style="width:50px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={historicalData} for:item="v">
+                        <tr key={v.id} class="list-row" onclick={handleViewDetail} data-id={v.id}>
+                            <td><span class={v.scoreClass}>{v.intent_score}</span></td>
+                            <td><strong>{v.company}</strong></td>
+                            <td class="slds-truncate">{v.persona}</td>
+                            <td>{v.hq}</td>
+                            <td><span class="time-tag-table">{v.timeAgo}</span></td>
+                            <td class="slds-truncate">{v.key_signals}</td>
+                            <td><lightning-button-icon icon-name="utility:expand" variant="bare"></lightning-button-icon></td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+
+        <template if:true={selectedVisitor}>
+            <section class="slds-modal slds-fade-in-open slds-modal_medium">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header modal-header-blue">
+                        <lightning-button-icon icon-name="utility:close" variant="border-filled" class="slds-modal__close" onclick={closeModal}></lightning-button-icon>
+                        <h2 class="slds-modal__title">{selectedVisitor.company} | Strategic Profile</h2>
+                    </header>
+                    
+                    <div class="slds-modal__content slds-p-around_large">
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-2">
+                                <h3 class="detail-title">🏢 Firmographics</h3>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Website Domain</label>
+                                    <p class="field-value">{selectedVisitor.domain}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Headquarters</label>
+                                    <p class="field-value">{selectedVisitor.hq}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Company Size</label>
+                                    <p class="field-value">{selectedVisitor.company_size}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Industry</label>
+                                    <p class="field-value">{selectedVisitor.industry}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Technology Stack</label>
+                                    <p class="field-value">{selectedVisitor.tech_stack}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Leadership</label>
+                                    <p class="field-value">{selectedVisitor.leadership}</p>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2">
+                                <h3 class="detail-title">🎯 Intent Insight</h3>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Buying Persona</label>
+                                    <p class="field-value">{selectedVisitor.persona}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Purchase Stage</label>
+                                    <p class="field-value">{selectedVisitor.intent_stage}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Behavioral Signals</label>
+                                    <p class="field-value">{selectedVisitor.key_signals}</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Data Confidence</label>
+                                    <p class={selectedVisitor.confClass}>{selectedVisitor.confidence}% Reliable</p>
+                                </div>
+                                <div class="slds-m-bottom_medium">
+                                    <label class="field-label">Engagement Stats</label>
+                                    <p class="field-value">{selectedVisitor.visits} Visits | {selectedVisitor.duration} Session</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-box slds-m-top_large ai-card">
+                            <h3 class="detail-title" style="border:none">🤖 AI Research Summary</h3>
+                            <p class="field-value slds-m-bottom_medium">{selectedVisitor.ai_summary}</p>
+                            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                                <p class="blue-text slds-text-heading_small">Hook: {selectedVisitor.sales_hook}</p>
+                                <lightning-button variant="brand" label="Draft Outreach Email" icon-name="utility:email" onclick={handleEmailLead}></lightning-button>
+                            </div>
+                            <div class="action-highlight slds-m-top_small">Recommended Action: {selectedVisitor.sales_action}</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+</template>
