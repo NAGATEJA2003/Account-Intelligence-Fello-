@@ -30,7 +30,7 @@
 #     run_engine()
 import json
 import os
-from .research_agent import get_account_intel
+from research_agent import get_account_intel
 
 # Get the directory of this script
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -43,11 +43,11 @@ def run_engine():
     with open(signals_path, 'r') as f: visitors = json.load(f)
     master_hub = []
     for v in visitors:
-        print(f"Analyzing {v['company']}...")
+        print(f"🔍 Analyzing {v['company']}...")
         intel = get_account_intel(v['company'], v['pages_visited'])
         master_hub.append({**v, **intel})
 
     with open(master_path, 'w') as f: json.dump(master_hub, f, indent=4)
-    print("Master Hub Updated.")
+    print("🚀 Master Hub Updated.")
 
 if __name__ == "__main__": run_engine()

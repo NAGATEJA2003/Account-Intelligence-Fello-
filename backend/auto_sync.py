@@ -1,10 +1,10 @@
 import os
 import time
 import json
-from .generate_signals import generate_random_traffic
-from .research_agent import get_account_intel
-from .push_to_salesforce import push_intelligence_to_sf
-from .fello_logger import get_logger
+from generate_signals import generate_random_traffic
+from research_agent import get_account_intel
+from push_to_salesforce import push_intelligence_to_sf
+from fello_logger import get_logger
 
 # Get the directory of this script
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -42,7 +42,7 @@ def run():
         try:
             name_to_research = v.get('company', 'Unknown')
             # Progress tracking for your screen recording/demo
-            print(f"\n[{index}/{len(visitors)}] Researching: {name_to_research}...")
+            print(f"\n[{index}/{len(visitors)}] 🔍 Researching: {name_to_research}...")
 
             # 1. Get the AI data (The "Brain" call)
             intel = get_account_intel(name_to_research, v['pages_visited'])
