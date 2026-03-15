@@ -1,3 +1,11 @@
+# Fello Account Intelligence Sync Workflow
+#
+# This workflow is designed to be fork-friendly. Each team member can:
+# 1. Fork this repository
+# 2. Add their own secrets (SF_USERNAME, SF_PASSWORD, SF_TOKEN, GROQ_API_KEY)
+# 3. Run the workflow with their own credentials
+#
+# See docs/TEAM_SETUP.md for complete instructions
 name: Fello Account Intelligence Sync
 
 on:

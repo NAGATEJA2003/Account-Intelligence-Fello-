@@ -1,0 +1,71 @@
+/**
+ * Workflow Trigger Component Styles
+ */
+
+/* Main container */
+:host {
+    display: block;
+}
+
+/* Alert messages */
+.slds-alert_error,
+.slds-alert_success {
+    margin-bottom: 1rem;
+}
+
+.slds-alert_error h2,
+.slds-alert_success h2 {
+    display: flex;
+    align-items: center;
+}
+
+/* Form elements */
+.slds-form-element {
+    margin-bottom: 0.5rem;
+}
+
+/* Workflow table */
+.slds-table_cell-buffer tr:hover {
+    background-color: #f3f3f3;
+    cursor: pointer;
+}
+
+/* Status icons */
+.slds-text-color_success {
+    color: #2e844a;
+}
+
+.slds-text-color_error {
+    color: #ea001e;
+}
+
+.slds-text-color_weak {
+    color: #54698d;
+}
+
+/* Button states */
+.slds-button:disabled {
+    opacity: 0.7;
+}
+
+/* Links */
+a {
+    color: #005fb2;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Loading state */
+.slds-spinner {
+    margin: 1rem auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .slds-select {
+        width: 100%;
+    }
+}
