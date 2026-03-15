@@ -1,18 +1,19 @@
-# Salesforce DX Project: Next Steps
+# Fello Account Intelligence Engine 🚀
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+An end-to-end buyer intent pipeline that bridges anonymous web traffic with Salesforce CRM insights.
 
-## How Do You Plan to Deploy Your Changes?
+## 🧠 How it Works
+1. **Signal Generation**: `generate_signals.py` simulates varied visitor behavior.
+2. **AI Research**: `research_agent.py` uses LLMs to perform deep firmographic research.
+3. **Stateful Sync**: `push_to_salesforce.py` implements "Revised Diagnosis" logic to update Salesforce records intelligently.
+4. **Dashboard**: A custom Lightning Web Component (LWC) visualizes scores, tech stacks, and sales hooks.
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+## 🛠️ Tech Stack
+- **Backend**: Python (Groq/Llama-3)
+- **Frontend**: Salesforce LWC, Apex
+- **Integration**: Salesforce REST API (JSON-based)
 
-## Configure Your Salesforce DX Project
-
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
-
-## Read All About It
-
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+## 📦 Setup
+1. Clone the repo.
+2. Add your keys to a local `config.json` (excluded from Git).
+3. Run `python auto_sync.py` to start the live pipeline.
