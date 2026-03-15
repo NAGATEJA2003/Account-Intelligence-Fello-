@@ -2,37 +2,9 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>60.0</apiVersion>
     <isExposed>true</isExposed>
-
-    <!-- Available for: Record Pages, Home Pages, App Pages, and Community Pages -->
     <targets>
         <target>lightning__RecordPage</target>
         <target>lightning__AppPage</target>
         <target>lightning__HomePage</target>
-        <target>lightningCommunity__Page</target>
     </targets>
-
-    <!-- Design Properties for Lightning App Builder -->
-    <targetConfigs>
-        <targetConfig targets="lightning__RecordPage,lightning__AppPage,lightning__HomePage,lightningCommunity__Page">
-            <property name="title" type="String" default="Account Intelligence Sync"
-                label="Title"
-                description="The title displayed on the card">
-            </property>
-
-            <property name="description" type="String" default="Trigger the AI-powered account intelligence workflow"
-                label="Description"
-                description="The description displayed below the title">
-            </property>
-
-            <property name="buttonLabel" type="String" default="Run Intelligence Sync"
-                label="Button Label"
-                description="The text on the trigger button">
-            </property>
-
-            <property name="showRecentWorkflows" type="Boolean" default="true"
-                label="Show Recent Workflows"
-                description="Display recent workflow runs in the component">
-            </property>
-        </targetConfig>
-    </targetConfigs>
 </LightningComponentBundle>

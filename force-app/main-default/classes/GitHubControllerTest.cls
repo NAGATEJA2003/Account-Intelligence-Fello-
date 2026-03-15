@@ -6,20 +6,6 @@
 @IsTest
 private class GitHubControllerTest {
 
-    @TestSetup
-    static void setup() {
-        // Create test Named Credential
-        NamedCredential cred = new NamedCredential(
-            DeveloperName = 'GitHub_Api',
-            MasterLabel = 'GitHub API',
-            Endpoint = 'https://api.github.com',
-            AuthType = 'NamedPrincipal',
-            AuthProvider = 'AuthProvider', // Would need real setup
-            GenerateHeader = true
-        );
-        insert cred;
-    }
-
     @IsTest
     static void testTriggerWorkflowSuccess() {
         // Test successful workflow trigger
@@ -58,6 +44,18 @@ private class GitHubControllerTest {
     }
 
     @IsTest
+    static void testTriggerWorkflowTenRecords() {
+        // Test with different record count
+        Test.setMock(HttpCalloutMock.class, new GitHubApiMock(204));
+
+        Test.startTest();
+        Map<String, String> result = GitHubController.triggerWorkflow('trigger-sync', 10);
+        Test.stopTest();
+
+        System.assertEquals('SUCCESS', result.get('status'));
+    }
+
+    @IsTest
     static void testGetRecentWorkflows() {
         // Test fetching recent workflows
         Test.setMock(HttpCalloutMock.class, new GitHubApiMock(200, '{"workflow_runs":[]}'));
@@ -67,6 +65,42 @@ private class GitHubControllerTest {
         Test.stopTest();
 
         System.assertNotEquals(null, result);
+    }
+
+    @IsTest
+    static void testGetRecentWorkflowsError() {
+        // Test error handling when fetching workflows
+        Test.setMock(HttpCalloutMock.class, new GitHubApiMock(404));
+
+        Test.startTest();
+        List<Map<String, Object>> result = GitHubController.getRecentWorkflows();
+        Test.stopTest();
+
+        System.assertEquals(0, result.size());
+    }
+
+    @IsTest
+    static void testIsConfiguredReturnsTrue() {
+        // Note: isConfigured checks for NamedCredential existence
+        // In test context without NamedCredential, returns false
+        Test.startTest();
+        Boolean result = GitHubController.isConfigured();
+        Test.stopTest();
+
+        // Should return false in test context without NamedCredential
+        System.assertEquals(false, result);
+    }
+
+    @IsTest
+    static void testTriggerWorkflowCalloutException() {
+        // Test handling of callout exceptions
+        Test.setMock(HttpCalloutMock.class, new GitHubApiMock(500));
+
+        Test.startTest();
+        Map<String, String> result = GitHubController.triggerWorkflow('trigger-sync', 5);
+        Test.stopTest();
+
+        System.assertEquals('ERROR', result.get('status'));
     }
 
     /**

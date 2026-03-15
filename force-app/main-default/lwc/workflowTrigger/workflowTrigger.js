@@ -23,7 +23,7 @@ export default class WorkflowTrigger extends LightningElement {
     @api title = 'Account Intelligence Sync';
     @api description = 'Trigger the AI-powered account intelligence workflow';
     @api buttonLabel = 'Run Intelligence Sync';
-    @api showRecentWorkflows = true;
+    @api showRecentWorkflows = false;
 
     // Track properties
     @track loading = false;
@@ -64,9 +64,10 @@ export default class WorkflowTrigger extends LightningElement {
     wiredWorkflows(result) {
         this._workflowsResult = result;
         if (result.data) {
-            this.recentWorkflows = result.data.map(workflow => ({
+            this.recentWorkflows = result.data(workflow => ({
                 ...workflow,
                 statusClass: this.getStatusClass(workflow.status, workflow.conclusion),
+                statusIcon: this.getStatusIcon(workflow.conclusion),
                 createdDate: new Date(workflow.created_at).toLocaleString()
             }));
         } else if (result.error) {
@@ -78,6 +79,18 @@ export default class WorkflowTrigger extends LightningElement {
         return this.recentWorkflows && this.recentWorkflows.length > 0;
     }
 
+    get buttonLabelComputed() {
+        return this.loading ? 'Running...' : this.buttonLabel;
+    }
+
+    get buttonIconName() {
+        return this.loading ? 'utility:spinner' : 'utility:refresh';
+    }
+
+    get toggleWorkflowsLabel() {
+        return this.showWorkflows ? 'Hide' : 'Show';
+    }
+
     getStatusClass(status, conclusion) {
         if (status === 'completed') {
             return conclusion === 'success' ? 'slds-text-color_success' : 'slds-text-color_error';
@@ -87,7 +100,7 @@ export default class WorkflowTrigger extends LightningElement {
         return 'slds-text-color_default';
     }
 
-    get statusIcon(conclusion) {
+    getStatusIcon(conclusion) {
         switch (conclusion) {
             case 'success':
                 return 'utility:success';

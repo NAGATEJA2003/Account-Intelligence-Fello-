@@ -67,10 +67,10 @@
                     <div class="slds-m-top_medium">
                         <lightning-button
                             variant="brand"
-                            label={loading ? 'Running...' : buttonLabel}
+                            label={buttonLabelComputed}
                             onclick={handleTrigger}
                             disabled={loading}
-                            icon-name={loading ? 'utility:spinner' : 'utility:refresh'}
+                            icon-name={buttonIconName}
                             icon-position="left"
                             class="slds-m-left_x-small"
                         ></lightning-button>
@@ -86,7 +86,7 @@
                         <div class="slds-col_bump-left">
                             <lightning-button-group>
                                 <lightning-button
-                                    label={showWorkflows ? 'Hide' : 'Show'}
+                                    label={toggleWorkflowsLabel}
                                     onclick={toggleWorkflows}
                                     variant="border-filled"
                                 ></lightning-button>
@@ -124,7 +124,7 @@
                                         <tr key={workflow.id} class="slds-hint-parent">
                                             <td>
                                                 <lightning-icon
-                                                    icon-name={statusIcon(workflow.conclusion)}
+                                                    icon-name={workflow.statusIcon}
                                                     size="x-small"
                                                     class={workflow.statusClass}
                                                 ></lightning-icon>
