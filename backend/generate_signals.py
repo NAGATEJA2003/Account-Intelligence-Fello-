@@ -7,7 +7,8 @@ DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), 'data')
 
 def generate_random_traffic(count=5):
     config_path = os.path.join(SCRIPT_DIR, 'config.json')
-    if not os.path.exists(config_path): return
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Config file not found: {config_path}")
     with open(config_path, 'r') as f: config = json.load(f)
     
     urls, ips = config['url_pool'], config['ip_pool']
@@ -33,6 +34,7 @@ def generate_random_traffic(count=5):
         })
     
     signals_path = os.path.join(DATA_DIR, 'visitor_signals.json')
+    os.makedirs(DATA_DIR, exist_ok=True)
     with open(signals_path, 'w') as f: json.dump(signals, f, indent=4)
     print(f"✅ Generated {count} signals with varied intent.")
 
