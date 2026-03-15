@@ -42,7 +42,7 @@ def run():
         try:
             name_to_research = v.get('company', 'Unknown')
             # Progress tracking for your screen recording/demo
-            print(f"\n[{index}/{len(visitors)}] 🔍 Researching: {name_to_research}...")
+            print(f"\n[{index}/{len(visitors)}] Researching: {name_to_research}...")
 
             # 1. Get the AI data (The "Brain" call)
             intel = get_account_intel(name_to_research, v['pages_visited'])

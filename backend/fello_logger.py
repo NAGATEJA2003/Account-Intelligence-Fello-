@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 
 # Get the directory of this script
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -14,7 +15,14 @@ def get_logger(name):
         log_path = os.path.join(LOGS_DIR, "fello_operations.log")
 
         fh = logging.FileHandler(log_path, encoding='utf-8')
-        ch = logging.StreamHandler()
+        # Use StreamHandler with UTF-8 encoding for console output
+        try:
+            ch = logging.StreamHandler(stream=sys.stdout)
+            # Force UTF-8 encoding for Windows compatibility
+            if hasattr(sys.stdout, 'reconfigure'):
+                sys.stdout.reconfigure(encoding='utf-8')
+        except Exception:
+            ch = logging.StreamHandler()
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         fh.setFormatter(formatter)
         ch.setFormatter(formatter)

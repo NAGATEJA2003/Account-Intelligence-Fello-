@@ -34,6 +34,6 @@ def generate_random_traffic(count=5):
     
     signals_path = os.path.join(DATA_DIR, 'visitor_signals.json')
     with open(signals_path, 'w') as f: json.dump(signals, f, indent=4)
-    print(f"✅ Generated {count} signals with varied intent.")
+    print(f"Generated {count} signals with varied intent.")
 
 if __name__ == "__main__": generate_random_traffic()
