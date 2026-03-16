@@ -10,6 +10,12 @@ This script runs the complete pipeline:
 Usage:
     python run_sync.py
 """
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 from backend.auto_sync import run
 
 if __name__ == "__main__":

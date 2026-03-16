@@ -35,7 +35,7 @@ def verify_api_configuration():
         raise ValueError('GROQ_API_KEY environment variable not set. '
                         'Please configure this in GitHub Secrets or your .env file.')
 
-    logger.info(f"✅ Groq API configured (model: {GROQ_MODEL})")
+    logger.info(f"[OK] Groq API configured (model: {GROQ_MODEL})")
 
 
 def create_prompt(company_name, pages):
@@ -98,7 +98,7 @@ def get_account_intel(company_name, pages):
     # Create prompt
     prompt = create_prompt(company_name, pages)
 
-    logger.debug(f"🔍 Analyzing {company_name} with {len(pages) if pages else 0} pages")
+    logger.debug(f"[*] Analyzing {company_name} with {len(pages) if pages else 0} pages")
 
     try:
         # Call Groq API
@@ -130,9 +130,9 @@ def get_account_intel(company_name, pages):
 
         missing_fields = [f for f in required_fields if f not in result]
         if missing_fields:
-            logger.warning(f"⚠️ Missing fields in response: {missing_fields}")
+            logger.warning(f"[!] Missing fields in response: {missing_fields}")
 
-        logger.info(f"✅ Analysis complete for {company_name} "
+        logger.info(f"[OK] Analysis complete for {company_name} "
                    f"(Intent: {result.get('intent_score', 'N/A')}/10, "
                    f"Confidence: {result.get('confidence_score', 'N/A')}%)")
 
@@ -169,4 +169,4 @@ if __name__ == "__main__":
         result = get_account_intel(test_company, test_pages)
         print(json.dumps(result, indent=2))
     except (ValueError, GroqAPIError) as e:
-        print(f"❌ Error: {e}")
+        print(f"[ERROR] Error: {e}")
